@@ -38,6 +38,16 @@ pre code { background: none; padding: 0; }
 .lang-card .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
 .lang-card .name { font-weight: 600; color: #fff; font-size: 0.95rem; }
 .lang-card .ext { color: var(--text2); font-size: 0.8rem; margin-top: 0.3rem; }
+<style>
+.env-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:12px 0}
+@media(max-width:700px){.env-grid{grid-template-columns:1fr}}
+.env-card{background:#f8f9fa;border-radius:8px;padding:16px;border:1px solid #e8e8e8;margin-bottom:16px}
+.env-card h4{margin:0 0 10px;color:#34495e;font-size:14px}
+.env-card table{font-size:12px;margin:0;width:100%}
+.env-card th{background:#95a5a6;padding:6px 8px;font-size:11px}
+.env-card td{padding:5px 8px;text-align:left;border-bottom:1px solid #ddd}
+.env-card tr:last-child td{border-bottom:none}
+</style>
 </style>
 </head>
 <body>
@@ -407,7 +417,7 @@ $$ <span class="kw">LANGUAGE</span> plpgsql;</code></pre>
 <tr>
     <th rowspan="2">N</th>
     <th colspan="4" style="background:#4a1010;">Oracle 19c</th>
-    <th colspan="4" style="background:#102a4a;">GaussDB 9.2</th>
+    <th colspan="4" style="background:#102a4a;">GaussDB 506</th>
 </tr>
 <tr style="background:#4a1010;">
     <th style="background:#4a1010;">AC</th><th style="background:#4a1010;">AP</th><th style="background:#4a1010;">EC</th><th style="background:#4a1010;">EP</th>
@@ -449,15 +459,31 @@ $$ <span class="kw">LANGUAGE</span> plpgsql;</code></pre>
 </table>
 </div>
 
-<h2>8. 数据库连接信息</h2>
-<div class="card">
+<h2>8. 测试环境</h2>
+<div class="env-grid">
+<div class="env-card">
+<h4>数据库服务器（Oracle + GaussDB 共用）</h4>
 <table>
-<tr><th>数据库</th><th>版本</th><th>JDBC URL</th><th>端口</th></tr>
-<tr><td>Oracle</td><td>19.13.0.0.0</td><td><code>jdbc:oracle:thin:@192.168.163.227:1527/pdb1</code></td><td>1527</td></tr>
-<tr><td>GaussDB</td><td>9.2.4</td><td><code>jdbc:postgresql://192.168.163.227:15432/postgres</code></td><td>15432</td></tr>
+<tr><td style="font-weight:600;width:40%">OS</td><td>CentOS / Linux (x86_64, Hyper-V)</td></tr>
+<tr><td style="font-weight:600">CPU</td><td>Intel CC150 @ 3.50GHz, 8C/16T</td></tr>
+<tr><td style="font-weight:600">Cache</td><td>L1 32K / L2 256K / L3 16384K</td></tr>
+<tr><td style="font-weight:600">Memory</td><td>10 GB DDR4</td></tr>
+<tr><td style="font-weight:600">Oracle</td><td>19c</td></tr>
+<tr><td style="font-weight:600">GaussDB</td><td>Kernel 506.0.0.SPC0500</td></tr>
 </table>
-<div class="note">
-<strong>注意：</strong>Oracle 实际监听端口为 1527（非默认 1521）。
+</div>
+<div class="env-card">
+<h4>客户端（开发语言测试环境）</h4>
+<table>
+<tr><td style="font-weight:600;width:40%">OS</td><td>macOS 26.4 (Apple Silicon, ARM64)</td></tr>
+<tr><td style="font-weight:600">CPU</td><td>Apple M1, 8 Core</td></tr>
+<tr><td style="font-weight:600">Memory</td><td>16 GB</td></tr>
+<tr><td style="font-weight:600">C/C++</td><td>Apple Clang 21.0.0</td></tr>
+<tr><td style="font-weight:600">Go</td><td>1.26.2 darwin/arm64</td></tr>
+<tr><td style="font-weight:600">Java</td><td>OpenJDK 17.0.18</td></tr>
+<tr><td style="font-weight:600">Python</td><td>3.12.13</td></tr>
+<tr><td style="font-weight:600">Rust</td><td>远程编译测试</td></tr>
+</table>
 </div>
 </div>
 
