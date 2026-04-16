@@ -1,0 +1,23 @@
+# Build artifacts
+report/*.class
+report/c_v1
+report/go_v1
+report/rust_v1
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+
+# Data files
+report/benchmark_results.csv
+report/benchmark_report.md
