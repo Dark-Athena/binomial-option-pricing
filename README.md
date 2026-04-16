@@ -8,7 +8,7 @@
 
 This project provides a complete, cross-language implementation of the CRR binomial tree model for American/European option pricing, along with an optimization study comparing two distinct algorithmic approaches. Implementations are provided in **C, Go, Java, Python, Rust**, and **PL/SQL / PL/pgSQL** (Oracle and GaussDB stored procedures). The project includes a one-click benchmark script for automated compilation, execution, and report generation.
 
-**Key Finding:** By replacing per-node `POWER()` calls with a constant-time intrinsic value recurrence (`intr = intr * dd + intrStep`), we reduce total `POWER()` invocations from O(N^2) to O(N) — a **99%+ reduction** for typical N values. Combined with hardware-native floating-point types (`BINARY_DOUBLE` / `float64`) replacing software-emulated decimal types (`NUMBER` / `NUMERIC`), we observe up to **18.4x speedup** on Oracle 19c and **2.3x speedup** on GaussDB 9.2 (at N=300; V1 NUMERIC overflows beyond that).
+**Key Finding:** By replacing per-node `POWER()` calls with a constant-time intrinsic value recurrence (`intr = intr * dd + intrStep`), we reduce total `POWER()` invocations from O(N^2) to O(N) — a **99%+ reduction** for typical N values. Combined with hardware-native floating-point types (`BINARY_DOUBLE` / `float64`) replacing software-emulated decimal types (`NUMBER` / `NUMERIC`), we observe up to **18.4x speedup** on Oracle 19c and **2.3x speedup** on GaussDB 506 (Kernel 506.0.0.SPC0500) (at N=300; V1 NUMERIC overflows beyond that).
 
 ---
 
@@ -413,7 +413,7 @@ Oracle's `NUMBER` type implements arbitrary-precision decimal arithmetic entirel
 
 **Combined with intr recurrence (eliminating POWER() calls), the total speedup reaches up to 18.4x.**
 
-### 8.2 GaussDB 9.2: NUMERIC vs float8
+### 8.2 GaussDB 506 (Kernel 506.0.0.SPC0500): NUMERIC vs float8
 
 > **Important caveat:** Due to GaussDB's function overloading mechanism, an earlier test inadvertently measured the float8 overload of V1 (because JDBC `setDouble` preferentially matches `double precision` parameters). After removing the float8 overload to ensure V1 uses pure NUMERIC internally, the performance gap is dramatically larger.
 

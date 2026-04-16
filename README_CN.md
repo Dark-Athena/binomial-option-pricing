@@ -8,7 +8,7 @@
 
 本项目提供了 CRR 二叉树期权定价模型的完整跨语言实现，涵盖 **C、Go、Java、Python、Rust** 五种编程语言以及 **Oracle PL/SQL / GaussDB PL/pgSQL** 两种数据库存储过程，并对两种不同的算法实现（V1 基线版 vs V2 优化版）进行了系统的性能对比分析。
 
-**核心发现：** 通过将逐节点 `POWER()` 调用替换为常数时间内在价值递推（`intr = intr * dd + intrStep`），我们将 `POWER()` 调用总量从 O(N²) 降至 O(N)——对于典型 N 值，减少率超过 **99%**。结合硬件原生浮点类型（Oracle `BINARY_DOUBLE` / GaussDB `float8`）替代软件模拟十进制类型（`NUMBER` / `NUMERIC`），我们在 **Oracle 19c 上实现了最高 18.4 倍加速，GaussDB 9.2 上实现了 2.3 倍加速**。
+**核心发现：** 通过将逐节点 `POWER()` 调用替换为常数时间内在价值递推（`intr = intr * dd + intrStep`），我们将 `POWER()` 调用总量从 O(N²) 降至 O(N)——对于典型 N 值，减少率超过 **99%**。结合硬件原生浮点类型（Oracle `BINARY_DOUBLE` / GaussDB `float8`）替代软件模拟十进制类型（`NUMBER` / `NUMERIC`），我们在 **Oracle 19c 上实现了最高 18.4 倍加速，GaussDB 506 (Kernel 506.0.0.SPC0500) 上实现了 2.3 倍加速**。
 
 ---
 
@@ -422,7 +422,7 @@ Oracle 的 `NUMBER` 类型完全在软件层面实现任意精度十进制算术
 | 2,000 | 13,078             | 717                       | 18.2x  |
 | 5,000 | 82,691             | 4,526                     | 18.3x  |
 
-### 8.2 GaussDB 9.2: NUMERIC vs float8
+### 8.2 GaussDB 506 (Kernel 506.0.0.SPC0500): NUMERIC vs float8
 
 GaussDB 的 `NUMERIC` 与 `float8`（DOUBLE PRECISION）性能差距同样显著。虽然 GaussDB 内部在执行 `EXP`、`POWER`、`SQRT` 时会委托给 float64 计算，但结果会转换回高精度 NUMERIC 值（可达几十位小数），后续运算必须处理这些大尺寸 NUMERIC 值，产生随 N 超线性增长的累加开销。
 
