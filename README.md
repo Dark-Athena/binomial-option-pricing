@@ -8,7 +8,7 @@
 
 This project provides a complete, cross-language implementation of the CRR binomial tree model for American/European option pricing, along with an optimization study comparing two distinct algorithmic approaches. Implementations are provided in **C, Go, Java, Python, Rust**, and **PL/SQL / PL/pgSQL** (Oracle and GaussDB stored procedures). The project includes a one-click benchmark script for automated compilation, execution, and report generation.
 
-**Key Finding:** By replacing per-node `POWER()` calls with a constant-time intrinsic value recurrence (`intr = intr * dd + intrStep`), we reduce total `POWER()` invocations from O(N^2) to O(N) — a **99%+ reduction** for typical N values. Combined with hardware-native floating-point types (`BINARY_DOUBLE` / `float64`) replacing software-emulated decimal types (`NUMBER` / `NUMERIC`), we observe up to **18.4x speedup** on Oracle 19c and **2.8x speedup** on GaussDB 9.2.
+**Key Finding:** By replacing per-node `POWER()` calls with a constant-time intrinsic value recurrence (`intr = intr * dd + intrStep`), we reduce total `POWER()` invocations from O(N^2) to O(N) — a **99%+ reduction** for typical N values. Combined with hardware-native floating-point types (`BINARY_DOUBLE` / `float64`) replacing software-emulated decimal types (`NUMBER` / `NUMERIC`), we observe up to **18.4x speedup** on Oracle 19c and **2.3x speedup** on GaussDB 9.2 (at N=300; V1 NUMERIC overflows beyond that).
 
 ---
 
@@ -415,20 +415,26 @@ Oracle's `NUMBER` type implements arbitrary-precision decimal arithmetic entirel
 
 ### 8.2 GaussDB 9.2: NUMERIC vs float8
 
-GaussDB's `NUMERIC` and `float8` (DOUBLE PRECISION) exhibit a smaller performance gap than Oracle's NUMBER vs BINARY_DOUBLE. GaussDB internally uses float64 for mathematical functions (`EXP`, `POWER`, `SQRT`) regardless of input type, converting back to NUMERIC for the result. The overhead comes primarily from type conversion, not computation.
+> **Important caveat:** Due to GaussDB's function overloading mechanism, an earlier test inadvertently measured the float8 overload of V1 (because JDBC `setDouble` preferentially matches `double precision` parameters). After removing the float8 overload to ensure V1 uses pure NUMERIC internally, the performance gap is dramatically larger.
+
+GaussDB's `NUMERIC` type has significant overhead compared to `float8`. While GaussDB internally delegates `EXP`, `POWER`, `SQRT` to float64 computation, the results are converted back to high-precision NUMERIC values (potentially dozens of decimal places). Each subsequent arithmetic operation must then process these large NUMERIC values, creating a cumulative overhead that grows super-linearly with N.
 
 | N | V1 (NUMERIC) | V2 (float8) | Speedup |
 |---|:------------:|:-----------:|:-------:|
-| 100 | 129 ms | 174 ms | **0.7x** (V1 faster) |
-| 300 | 733 ms | 515 ms | **1.4x** |
-| 500 | 1,063 ms | 606 ms | **1.8x** |
-| 500 (Put) | 1,173 ms | 529 ms | **2.2x** |
+| 100 | 1,092 ms | 920 ms | **1.2x** |
+| 200 | 1,515 ms | 1,138 ms | **1.3x** |
+| 300 | 2,706 ms | 1,179 ms | **2.3x** |
 
-The crossover at N ~ 200 reflects the fixed overhead of V2's recurrence initialization being amortized at larger N.
+Furthermore, V1 (NUMERIC) **overflows at N >= 500** (`value overflows numeric format`), while V2 (float8) has no such limitation.
+
+The key insight is that NUMERIC's high precision (dozens of decimal places) provides no practical benefit for financial pricing — float8's ~15 significant digits are more than sufficient. NUMERIC is pure overhead in this context.
 
 ### 8.3 Key Takeaway
 
-> **The dominant optimization is algorithmic (intr recurrence), not type substitution.** The recurrence reduces computational complexity from O(N^2) POWER calls to O(N), yielding consistent speedup across both databases. Type substitution (BINARY_DOUBLE/float8) provides an additional multiplier on Oracle, where the NUMBER hardware penalty is severe.
+> **Both optimizations matter, but their relative importance differs by database.**
+> - **Oracle:** Type substitution (NUMBER -> BINARY_DOUBLE) provides 3-5x alone, combined with intr recurrence reaching **18.4x**. The NUMBER type is the primary bottleneck.
+> - **GaussDB:** The intr recurrence is the primary differentiator. NUMERIC -> float8 provides a meaningful multiplier (~1.2-2.3x), but the recurrence is essential for preventing overflow at high N.
+> - **On both databases:** The intr recurrence reduces `POWER()` calls by 99%+, which is the single most impactful optimization regardless of platform.
 
 ---
 
@@ -442,7 +448,7 @@ The crossover at N ~ 200 reflects the fixed overhead of V2's recurrence initiali
 
 4. **On Oracle, BINARY_DOUBLE vs NUMBER** provides an additional 3-5x multiplier, making the combined optimization reach **18.4x**.
 
-5. **On GaussDB, float8 vs NUMERIC** provides modest improvement (~1.1-1.3x at N=500), but the recurrence alone delivers consistent 1.5-2.2x speedup.
+5. **On GaussDB, float8 vs NUMERIC** provides substantial improvement (~1.2-2.3x at N=300), and critically, avoids NUMERIC overflow at N >= 500.
 
 6. **Python**, while 50-100x slower than C, remains viable for prototyping, teaching, and low-frequency applications. The algorithm design choices (O(1) array, backward induction) keep it tractable even for N=10,000.
 
