@@ -32,48 +32,52 @@
 
 ## 2. 实现语言与开发环境
 
-
-> >&#x1f40d;
-
-Python 3
-option_pricing.py
-
-
-> >Aa
-
-C (Clang)
-option_pricing.c
-
-
-> >&#9749;
-
-Java 17
-OptionPricing.java
-
-
-> >Go
-
-Go 1.26
-option_pricing.go
-
-
-> >&#x2699;
-
-Rust 1.94
-option_pricing.rs
-
-
-> >&#x1f418;
-
-Oracle PL/SQL
-binomial_option_price
-
-
-> >&#x1f427;
-
-GaussDB PL/pgSQL
-binomial_amer_opt_v3
-
+<table style="border-collapse:collapse;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;">
+  <thead>
+    <tr>
+      <th style="background:#1a1a2e;color:#e0e0e0;padding:10px 20px;text-align:left;font-weight:600;letter-spacing:0.5px;">语言</th>
+      <th style="background:#1a1a2e;color:#e0e0e0;padding:10px 20px;text-align:left;font-weight:600;letter-spacing:0.5px;">版本</th>
+      <th style="background:#1a1a2e;color:#e0e0e0;padding:10px 20px;text-align:left;font-weight:600;letter-spacing:0.5px;">文件名</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">🐍 Python</td>
+      <td style="padding:10px 20px;">3</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">option_pricing.py</td>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">⚡ C</td>
+      <td style="padding:10px 20px;">Clang</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">option_pricing.c</td>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">☕ Java</td>
+      <td style="padding:10px 20px;">17</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">OptionPricing.java</td>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">🐹 Go</td>
+      <td style="padding:10px 20px;">1.26</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">option_pricing.go</td>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">🦀 Rust</td>
+      <td style="padding:10px 20px;">1.94</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">option_pricing.rs</td>
+    </tr>
+    <tr style="border-bottom:1px solid #e8e8e8;">
+      <td style="padding:10px 20px;">🏛️ Oracle PL/SQL</td>
+      <td style="padding:10px 20px;">-</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">binomial_option_price</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 20px;">🐘 GaussDB PL/pgSQL</td>
+      <td style="padding:10px 20px;">-</td>
+      <td style="padding:10px 20px;font-family:'SF Mono','Fira Code','Consolas',monospace;color:#4a6fa5;">binomial_amer_opt_v3</td>
+    </tr>
+  </tbody>
+</table>
 
 ## 3. Oracle PL/SQL 与 GaussDB PL/pgSQL 移植要点
 
